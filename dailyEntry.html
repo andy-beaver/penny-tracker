@@ -50,9 +50,14 @@
             const dimes = parseInt(document.getElementById(`${teamName}-dimes`).value) || 0;
             const quarters = parseInt(document.getElementById(`${teamName}-quarters`).value) || 0;
             const dollars = parseInt(document.getElementById(`${teamName}-dollars`).value) || 0;
+            const fives = parseInt(document.getElementById(`${teamName}-fives`).value) || 0;
+            const tens = parseInt(document.getElementById(`${teamName}-tens`).value) || 0;
+            const twenties = parseInt(document.getElementById(`${teamName}-twenties`).value) || 0;
+            const fifties = parseInt(document.getElementById(`${teamName}-fifties`).value) || 0;
+            const hundreds = parseInt(document.getElementById(`${teamName}-hundreds`).value) || 0;
 
             // Calculate points
-            const points = pennies - (nickels * 5 + dimes * 10 + quarters * 25 + dollars * 100);
+            const points = pennies - (nickels * 5 + dimes * 10 + quarters * 25 + dollars * 100 + fives * 500 + tens * 1000 + twenties * 2000 + fifties * 5000 + hundreds * 10000);
             pennyWarData.teams[teamName].points += points;
 
             saveData();
@@ -75,8 +80,18 @@
                     <input type="number" id="${teamName}-dimes" placeholder="Number of dimes" value="0">
                     <label for="${teamName}-quarters">Quarters:</label>
                     <input type="number" id="${teamName}-quarters" placeholder="Number of quarters" value="0">
-                    <label for="${teamName}-dollars">Dollar Bills:</label>
+                    <label for="${teamName}-dollars">Dollar Bills ($1):</label>
                     <input type="number" id="${teamName}-dollars" placeholder="Number of $1 bills" value="0">
+                    <label for="${teamName}-fives">Five Dollar Bills ($5):</label>
+                    <input type="number" id="${teamName}-fives" placeholder="Number of $5 bills" value="0">
+                    <label for="${teamName}-tens">Ten Dollar Bills ($10):</label>
+                    <input type="number" id="${teamName}-tens" placeholder="Number of $10 bills" value="0">
+                    <label for="${teamName}-twenties">Twenty Dollar Bills ($20):</label>
+                    <input type="number" id="${teamName}-twenties" placeholder="Number of $20 bills" value="0">
+                    <label for="${teamName}-fifties">Fifty Dollar Bills ($50):</label>
+                    <input type="number" id="${teamName}-fifties" placeholder="Number of $50 bills" value="0">
+                    <label for="${teamName}-hundreds">Hundred Dollar Bills ($100):</label>
+                    <input type="number" id="${teamName}-hundreds" placeholder="Number of $100 bills" value="0">
                     <button onclick="updatePoints('${teamName}')">Update Points</button>
                 `;
                 container.appendChild(teamDiv);
