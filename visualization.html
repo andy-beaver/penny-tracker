@@ -6,15 +6,20 @@
     <title>Penny War Visualization</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Additional custom styling */
         .bar-container {
-            height: 300px;
+            height: 300px; /* Fixed height for scaling */
         }
         .bar {
+            width: 40px; /* Fixed width for visibility */
+            margin: 2px;
+            background-color: #3498db; /* Default color */
+            position: relative;
+            transition: height 0.3s ease-in-out;
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            transition: height 0.3s;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
         }
         .bar span {
             position: absolute;
@@ -36,7 +41,6 @@
         <div class="text-center mt-6">
             <a href="dailyEntry.html" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Go to Daily Entry Page</a>
         </div>
-    </div>
 
     <script>
         let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || { teams: {} };
@@ -67,16 +71,16 @@
             }
 
             // Find the max value for scaling
-            const maxPoints = Math.max(...sortedTeams.map(([_, data]) => data.points));
+            const maxPoints = Math.max(...sortedTeams.map(([_, data]) => data.points)) || 1; // Prevent division by zero
 
             sortedTeams.forEach(([team, data]) => {
                 const barWrapper = document.createElement('div');
                 barWrapper.className = 'flex flex-col items-center w-16';
 
                 const bar = document.createElement('div');
-                bar.className = 'bar w-full rounded-t bg-blue-500';
+                bar.className = 'bar';
                 bar.style.height = `${(data.points / maxPoints) * 100}%`; // Scale height relative to max points
-                bar.style.backgroundColor = data.color;
+                bar.style.backgroundColor = data.color || '#3498db'; // Fallback color if data.color is missing
                 barWrapper.appendChild(bar);
 
                 const label = document.createElement('span');
