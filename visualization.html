@@ -3,17 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penny War Leaderboard</title>
+    <title>Penny War Visualization</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            max-width: 100%;
-            margin: 0;
-            background-color: #f4f4f4;
+            max-width: 600px;
+            margin: auto;
         }
         h1 {
             text-align: center;
+        }
+        .link-button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            background-color: #3498db;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .link-button:hover {
+            background-color: #2980b9;
         }
         .chart-container {
             width: 90%;
@@ -48,32 +60,36 @@
     </style>
 </head>
 <body>
-    <h1>Penny War Leaderboard</h1>
+    <h1>Penny War Visualization</h1>
     <div class="chart-container" id="chartContainer">
         <!-- Bars will be dynamically added here -->
     </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="dailyEntry.html" class="link-button">Go to Daily Entry Page</a>
+    </div>
+
     <script>
-        // Load data from localStorage
-        const teams = JSON.parse(localStorage.getItem('pennyWarTeams')) || {};
+        let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || { teams: {} };
 
         function renderChart() {
             const chartContainer = document.getElementById('chartContainer');
-            chartContainer.innerHTML = ''; // Clear existing content
+            chartContainer.innerHTML = '';
 
-            const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+            const sortedTeams = Object.entries(pennyWarData.teams).sort((a, b) => b[1].points - a[1].points);
             if (sortedTeams.length === 0) {
                 chartContainer.innerHTML = '<p style="text-align: center; font-size: 20px;">No data to display</p>';
                 return;
             }
 
             // Find the max value for scaling
-            const maxPoints = Math.max(...sortedTeams.map(([_, points]) => points));
+            const maxPoints = Math.max(...sortedTeams.map(([_, data]) => data.points));
 
-            sortedTeams.forEach(([team, points]) => {
+            sortedTeams.forEach(([team, data]) => {
                 const bar = document.createElement('div');
                 bar.className = 'bar';
-                bar.style.height = `${(points / maxPoints) * 100}%`; // Scale height relative to max points
-                bar.innerHTML = `<span>${points}</span><div class="label">${team}</div>`;
+                bar.style.height = `${(data.points / maxPoints) * 100}%`; // Scale height relative to max points
+                bar.style.backgroundColor = data.color;
+                bar.innerHTML = `<span>${data.points}</span><div class="label">${team}</div>`;
 
                 chartContainer.appendChild(bar);
             });
