@@ -23,36 +23,57 @@
             width: 90%;
             max-width: 600px;
             margin-top: 20px;
+            position: relative;
         }
         .bar-wrapper {
             display: flex;
             align-items: center;
-            margin: 5px 0;
+            margin: 10px 0;
+            position: relative;
         }
         .bar {
             height: 20px;
-            background-color: #3498db;
             margin-right: 10px;
-            color: white;
             text-align: center;
             line-height: 20px;
             border-radius: 3px;
+            position: absolute;
+        }
+        .bar.positive {
+            background-color: #3498db;
+            left: 50%;
+        }
+        .bar.negative {
+            background-color: #e74c3c;
+            right: 50%;
         }
         .label {
             margin-left: 10px;
+            min-width: 80px;
+            text-align: left;
+        }
+        .axis {
+            width: 1px;
+            background-color: #333;
+            height: 100%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
 <body>
     <h1>Penny War Leaderboard</h1>
-    <div id="chartContainer"></div>
+    <div id="chartContainer">
+        <div class="axis"></div>
+    </div>
 
     <script>
         let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || { teams: {} };
 
         function renderChart() {
             const chartContainer = document.getElementById('chartContainer');
-            chartContainer.innerHTML = ''; // Clear existing content
+            chartContainer.innerHTML = '<div class="axis"></div>'; // Clear existing content and add axis
 
             const sortedTeams = Object.entries(pennyWarData.teams).sort((a, b) => b[1].points - a[1].points);
             if (sortedTeams.length === 0) {
@@ -60,7 +81,7 @@
                 return;
             }
 
-            // Find the max value for scaling
+            // Find the max absolute value for scaling
             const maxPoints = Math.max(...sortedTeams.map(([_, data]) => Math.abs(data.points))) || 1;
 
             sortedTeams.forEach(([team, data]) => {
@@ -69,9 +90,15 @@
 
                 const bar = document.createElement('div');
                 bar.className = 'bar';
-                bar.style.width = `${(Math.abs(data.points) / maxPoints) * 100}%`; // Scale width relative to max points
-                bar.style.backgroundColor = data.color || '#3498db'; // Use provided color or fallback
+                const barWidthPercentage = (Math.abs(data.points) / maxPoints) * 50; // Scale width relative to max, up to 50% of container
+                bar.style.width = `${barWidthPercentage}%`;
                 bar.textContent = data.points;
+
+                if (data.points >= 0) {
+                    bar.classList.add('positive');
+                } else {
+                    bar.classList.add('negative');
+                }
 
                 const label = document.createElement('span');
                 label.className = 'label';
