@@ -4,48 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penny War Visualization</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        .bar-container {
-            height: 300px; /* Fixed height for scaling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-top: 20px;
+            color: #444;
+        }
+        #totalRaisedContainer {
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        #chartContainer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            width: 90%;
+            max-width: 600px;
+            height: 300px;
+            background-color: #e0e0e0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         .bar {
-            width: 40px; /* Fixed width for visibility */
-            margin: 2px;
-            background-color: #3498db; /* Default color */
-            position: relative;
-            transition: height 0.3s ease-in-out;
+            width: 40px;
+            margin: 5px;
+            background-color: #3498db;
             display: flex;
             justify-content: center;
-            /* Removed align-items: flex-end; */
-            border-top-left-radius: 0.5rem;
-            border-top-right-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow for better visibility */
-        }
-        .bar span {
-            position: absolute;
-            bottom: 0;
-            font-size: 0.9rem;
+            align-items: flex-end;
             color: white;
+            font-size: 0.9rem;
+            transition: height 0.3s ease-in-out;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .label {
+            margin-top: 5px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #2a7fb8;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen">
-    <div class="max-w-4xl mx-auto py-8 px-4">
-        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">Penny War Visualization</h1>
-        <div id="totalRaisedContainer" class="text-center text-xl font-semibold text-gray-700 mb-4"></div>
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <div id="chartContainer" class="flex justify-around space-x-4 bar-container bg-gray-200 p-4 rounded-lg">
-                <!-- Bars will be dynamically generated here -->
-            </div>
-        </div>
-        <div class="text-center mt-6">
-            <a href="dailyEntry.html" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Go to Daily Entry Page</a>
-        </div>
-    </div>
+<body>
+    <h1>Penny War Visualization</h1>
+    <div id="totalRaisedContainer"></div>
+    <div id="chartContainer"></div>
+    <a href="dailyEntry.html" class="button">Go to Daily Entry Page</a>
 
     <script>
-        // Sample data for testing; replace this with your actual data retrieval
         let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || { teams: {} };
 
         function calculateTotalRaised() {
@@ -69,32 +97,31 @@
 
             const sortedTeams = Object.entries(pennyWarData.teams).sort((a, b) => b[1].points - a[1].points);
             if (sortedTeams.length === 0) {
-                chartContainer.innerHTML = '<p class="text-center text-lg text-gray-600">No data to display</p>';
+                chartContainer.innerHTML = '<p>No data to display</p>';
                 return;
             }
 
             // Find the max value for scaling
-            const maxPoints = Math.max(...sortedTeams.map(([_, data]) => data.points)) || 1; // Prevent division by zero
+            const maxPoints = Math.max(...sortedTeams.map(([_, data]) => Math.abs(data.points))) || 1; // Use absolute values to avoid negative heights
 
             sortedTeams.forEach(([team, data]) => {
                 const barWrapper = document.createElement('div');
-                barWrapper.className = 'flex flex-col items-center w-16';
+                barWrapper.style.display = 'flex';
+                barWrapper.style.flexDirection = 'column';
+                barWrapper.style.alignItems = 'center';
 
                 const bar = document.createElement('div');
                 bar.className = 'bar';
-                bar.style.height = `${(data.points / maxPoints) * 100}%`; // Scale height relative to max points
+                bar.style.height = `${(Math.abs(data.points) / maxPoints) * 100}%`; // Use absolute value for height
                 bar.style.backgroundColor = data.color || '#3498db'; // Fallback color if data.color is missing
+                bar.textContent = data.points;
+
+                const label = document.createElement('div');
+                label.className = 'label';
+                label.textContent = team;
+
                 barWrapper.appendChild(bar);
-
-                const label = document.createElement('span');
-                label.textContent = data.points;
-                bar.appendChild(label);
-
-                const teamName = document.createElement('p');
-                teamName.className = 'mt-2 text-sm font-medium text-center';
-                teamName.textContent = team;
-                barWrapper.appendChild(teamName);
-
+                barWrapper.appendChild(label);
                 chartContainer.appendChild(barWrapper);
             });
         }
