@@ -19,15 +19,27 @@
             padding: 5px;
             margin: 5px 0;
         }
-        button {
+        button, .link-button {
             padding: 10px 20px;
             margin-top: 10px;
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            background-color: #3498db;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .link-button:hover, button:hover {
+            background-color: #2980b9;
         }
     </style>
 </head>
 <body>
     <h1>Penny War Daily Entry</h1>
     <div id="dailyEntryContainer"></div>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="visualization.html" class="link-button">Go to Visualization</a>
+    </div>
 
     <script>
         let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || { teams: {} };
