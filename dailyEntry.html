@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penny War Daily Entry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Penny War Daily Entry</h1>
+    <div id="dailyEntryContainer"></div>
+
+    <script>
+        let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || { teams: {} };
+
+        function updatePoints(teamName) {
+            const pennies = parseInt(document.getElementById(`${teamName}-pennies`).value) || 0;
+            const nickels = parseInt(document.getElementById(`${teamName}-nickels`).value) || 0;
+            const dimes = parseInt(document.getElementById(`${teamName}-dimes`).value) || 0;
+            const quarters = parseInt(document.getElementById(`${teamName}-quarters`).value) || 0;
+            const dollars = parseInt(document.getElementById(`${teamName}-dollars`).value) || 0;
+
+            // Calculate points
+            const points = pennies - (nickels * 5 + dimes * 10 + quarters * 25 + dollars * 100);
+            pennyWarData.teams[teamName].points += points;
+
+            saveData();
+            alert(`Points updated for ${teamName}!`);
+        }
+
+        function renderDailyEntryForm() {
+            const container = document.getElementById('dailyEntryContainer');
+            container.innerHTML = '';
+
+            for (const teamName in pennyWarData.teams) {
+                const teamDiv = document.createElement('div');
+                teamDiv.innerHTML = `
+                    <h2 style="color: ${pennyWarData.teams[teamName].color}">${teamName}</h2>
+                    <label for="${teamName}-pennies">Pennies:</label>
+                    <input type="number" id="${teamName}-pennies" placeholder="Number of pennies" value="0">
+                    <label for="${teamName}-nickels">Nickels:</label>
+                    <input type="number" id="${teamName}-nickels" placeholder="Number of nickels" value="0">
+                    <label for="${teamName}-dimes">Dimes:</label>
+                    <input type="number" id="${teamName}-dimes" placeholder="Number of dimes" value="0">
+                    <label for="${teamName}-quarters">Quarters:</label>
+                    <input type="number" id="${teamName}-quarters" placeholder="Number of quarters" value="0">
+                    <label for="${teamName}-dollars">Dollar Bills:</label>
+                    <input type="number" id="${teamName}-dollars" placeholder="Number of $1 bills" value="0">
+                    <button onclick="updatePoints('${teamName}')">Update Points</button>
+                `;
+                container.appendChild(teamDiv);
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('pennyWarData', JSON.stringify(pennyWarData));
+        }
+
+        // Initial render
+        renderDailyEntryForm();
+    </script>
+</body>
+</html>
