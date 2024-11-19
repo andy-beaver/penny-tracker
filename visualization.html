@@ -4,80 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penny War Visualization</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-        }
-        h1 {
-            text-align: center;
-        }
-        .link-button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            display: inline-block;
-            text-decoration: none;
-            color: white;
-            background-color: #3498db;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .link-button:hover {
-            background-color: #2980b9;
-        }
-        .chart-container {
-            width: 90%;
-            margin: auto;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            height: 400px;
-            margin-top: 20px;
-            border: 2px solid #ccc;
-            padding: 20px;
-            background-color: white;
+        /* Additional custom styling */
+        .bar-container {
+            height: 300px;
         }
         .bar {
-            width: 50px;
-            margin: 0 5px;
-            background-color: #3498db;
-            text-align: center;
-            color: white;
-            transition: height 0.3s;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-        }
-        .label {
-            margin-top: 5px;
+            justify-content: center;
+            align-items: flex-end;
+            transition: height 0.3s;
         }
         .bar span {
-            font-size: 14px;
-            padding: 5px 0;
+            position: absolute;
+            bottom: 0;
+            font-size: 0.9rem;
+            color: white;
         }
     </style>
 </head>
-<body>
-    <h1>Penny War Visualization</h1>
-    <div class="chart-container" id="chartContainer">
-        <!-- Bars will be dynamically added here -->
-    </div>
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="dailyEntry.html" class="link-button">Go to Daily Entry Page</a>
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">Penny War Visualization</h1>
+        <div id="totalRaisedContainer" class="text-center text-xl font-semibold text-gray-700 mb-4"></div>
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <div id="chartContainer" class="flex justify-around items-end space-x-4 bar-container bg-gray-200 p-4 rounded-lg">
+                <!-- Bars will be dynamically generated here -->
+            </div>
+        </div>
+        <div class="text-center mt-6">
+            <a href="dailyEntry.html" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Go to Daily Entry Page</a>
+        </div>
     </div>
 
     <script>
         let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || { teams: {} };
 
+        function calculateTotalRaised() {
+            let totalRaised = 0;
+            for (const teamName in pennyWarData.teams) {
+                const teamData = pennyWarData.teams[teamName];
+                totalRaised += teamData.totalMoneyRaised || 0; // Sum up total money raised by each team
+            }
+            return totalRaised.toFixed(2);
+        }
+
+        function renderTotalRaised() {
+            const totalRaisedContainer = document.getElementById('totalRaisedContainer');
+            const totalRaised = calculateTotalRaised();
+            totalRaisedContainer.textContent = `Grand Total Raised for Hurricane Victims: $${totalRaised}`;
+        }
+
         function renderChart() {
             const chartContainer = document.getElementById('chartContainer');
-            chartContainer.innerHTML = '';
+            chartContainer.innerHTML = ''; // Clear existing content
 
             const sortedTeams = Object.entries(pennyWarData.teams).sort((a, b) => b[1].points - a[1].points);
             if (sortedTeams.length === 0) {
-                chartContainer.innerHTML = '<p style="text-align: center; font-size: 20px;">No data to display</p>';
+                chartContainer.innerHTML = '<p class="text-center text-lg text-gray-600">No data to display</p>';
                 return;
             }
 
@@ -85,17 +70,30 @@
             const maxPoints = Math.max(...sortedTeams.map(([_, data]) => data.points));
 
             sortedTeams.forEach(([team, data]) => {
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'flex flex-col items-center w-16';
+
                 const bar = document.createElement('div');
-                bar.className = 'bar';
+                bar.className = 'bar w-full rounded-t bg-blue-500';
                 bar.style.height = `${(data.points / maxPoints) * 100}%`; // Scale height relative to max points
                 bar.style.backgroundColor = data.color;
-                bar.innerHTML = `<span>${data.points}</span><div class="label">${team}</div>`;
+                barWrapper.appendChild(bar);
 
-                chartContainer.appendChild(bar);
+                const label = document.createElement('span');
+                label.textContent = data.points;
+                bar.appendChild(label);
+
+                const teamName = document.createElement('p');
+                teamName.className = 'mt-2 text-sm font-medium text-center';
+                teamName.textContent = team;
+                barWrapper.appendChild(teamName);
+
+                chartContainer.appendChild(barWrapper);
             });
         }
 
         // Initial render
+        renderTotalRaised();
         renderChart();
     </script>
 </body>
