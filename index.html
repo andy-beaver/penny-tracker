@@ -52,12 +52,12 @@
         <h2>Instructions</h2>
         <p>Welcome to the Penny War Tracker! Follow these steps to track your teams' progress:</p>
         <ol>
-            <li><strong>Add a Teams:</strong> Enter a team name and select a color for the team. Click "Add Team" to create the team.</li>
+            <li><strong>Add a Team:</strong> Enter a team name and select a color for the team. Click "Add Team" to create the team.</li>
             <li><strong>Enter Coins and Bills:</strong> Select a team from the dropdown menu, select a date range (start and end date), and enter the number of pennies, nickels, dimes, quarters, and dollar bills collected. Click "Add Points" to update the team's score.</li>
             <li><strong>Leaderboard:</strong> The leaderboard below displays each team's current points, with color-coded names for easy identification.</li>
             <li><strong>Reset Data:</strong> If you need to start over, click "Reset Data" to clear all teams and points (use with caution).</li>
         </ol>
-        <p>Note: Points are calculated as follows - Pennies add points, while nickels, dimes, quarters, and dollar bills subtract points.</p>
+        <p>Note: Points are calculated as follows - Pennies add points, while nickels, dimes, quarters, and dollar bills (including $5, $10, $20, $50, $100) subtract points.</p>
     </div>
 
     <div class="team-entry">
@@ -84,8 +84,18 @@
         <input type="number" id="dimes" placeholder="Number of dimes" value="0">
         <label for="quarters">Quarters:</label>
         <input type="number" id="quarters" placeholder="Number of quarters" value="0">
-        <label for="dollars">Dollar Bills:</label>
-        <input type="number" id="dollars" placeholder="Number of dollar bills" value="0">
+        <label for="dollars">Dollar Bills ($1):</label>
+        <input type="number" id="dollars" placeholder="Number of $1 bills" value="0">
+        <label for="fives">Five Dollar Bills ($5):</label>
+        <input type="number" id="fives" placeholder="Number of $5 bills" value="0">
+        <label for="tens">Ten Dollar Bills ($10):</label>
+        <input type="number" id="tens" placeholder="Number of $10 bills" value="0">
+        <label for="twenties">Twenty Dollar Bills ($20):</label>
+        <input type="number" id="twenties" placeholder="Number of $20 bills" value="0">
+        <label for="fifties">Fifty Dollar Bills ($50):</label>
+        <input type="number" id="fifties" placeholder="Number of $50 bills" value="0">
+        <label for="hundreds">Hundred Dollar Bills ($100):</label>
+        <input type="number" id="hundreds" placeholder="Number of $100 bills" value="0">
         <button onclick="addPoints()">Add Points</button>
         <button onclick="resetData()">Reset Data</button>
     </div>
@@ -144,8 +154,14 @@
             const dimes = parseInt(document.getElementById('dimes').value) || 0;
             const quarters = parseInt(document.getElementById('quarters').value) || 0;
             const dollars = parseInt(document.getElementById('dollars').value) || 0;
+            const fives = parseInt(document.getElementById('fives').value) || 0;
+            const tens = parseInt(document.getElementById('tens').value) || 0;
+            const twenties = parseInt(document.getElementById('twenties').value) || 0;
+            const fifties = parseInt(document.getElementById('fifties').value) || 0;
+            const hundreds = parseInt(document.getElementById('hundreds').value) || 0;
 
-            const points = pennies - (nickels * 5 + dimes * 10 + quarters * 25 + dollars * 100);
+            // Calculate points
+            const points = pennies - (nickels * 5 + dimes * 10 + quarters * 25 + dollars * 100 + fives * 500 + tens * 1000 + twenties * 2000 + fifties * 5000 + hundreds * 10000);
             teams[teamName].points += points;
 
             // Store the entry in history
@@ -172,38 +188,3 @@
 
                 row.appendChild(teamCell);
                 row.appendChild(pointsCell);
-                leaderboard.appendChild(row);
-            }
-        }
-
-        function updateTeamSelect() {
-            const selectTeam = document.getElementById('selectTeam');
-            selectTeam.innerHTML = '';
-
-            for (const team in teams) {
-                const option = document.createElement('option');
-                option.value = team;
-                option.textContent = team;
-                selectTeam.appendChild(option);
-            }
-        }
-
-        function saveData() {
-            localStorage.setItem('pennyWarTeams', JSON.stringify(teams));
-        }
-
-        function resetData() {
-            if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
-                teams = {};
-                saveData();
-                updateLeaderboard();
-                updateTeamSelect();
-            }
-        }
-
-        // Initial load
-        updateLeaderboard();
-        updateTeamSelect();
-    </script>
-</body>
-</html>
