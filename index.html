@@ -24,7 +24,7 @@
             text-align: left;
             border: 1px solid #ccc;
         }
-        input[type="text"], input[type="number"], input[type="color"] {
+        input[type="text"], input[type="number"], input[type="color"], input[type="date"] {
             width: 100%;
             padding: 5px;
             margin: 5px 0;
@@ -53,7 +53,7 @@
         <p>Welcome to the Penny War Tracker! Follow these steps to track your teams' progress:</p>
         <ol>
             <li><strong>Add a Team:</strong> Enter a team name and select a color for the team. Click "Add Team" to create the team.</li>
-            <li><strong>Enter Coins and Bills:</strong> Select a team from the dropdown menu and enter the number of pennies, nickels, dimes, quarters, and dollar bills collected. Click "Add Points" to update the team's score.</li>
+            <li><strong>Enter Coins and Bills:</strong> Select a team from the dropdown menu, select a date range (start and end date), and enter the number of pennies, nickels, dimes, quarters, and dollar bills collected. Click "Add Points" to update the team's score.</li>
             <li><strong>Leaderboard:</strong> The leaderboard below displays each team's current points, with color-coded names for easy identification.</li>
             <li><strong>Reset Data:</strong> If you need to start over, click "Reset Data" to clear all teams and points (use with caution).</li>
         </ol>
@@ -72,6 +72,10 @@
         <h2>Enter Coins/Bills</h2>
         <label for="selectTeam">Select Team:</label>
         <select id="selectTeam"></select>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
         <label for="pennies">Pennies:</label>
         <input type="number" id="pennies" placeholder="Number of pennies" value="0">
         <label for="nickels">Nickels:</label>
@@ -110,7 +114,7 @@
             }
 
             if (!teams[teamName]) {
-                teams[teamName] = { points: 0, color: teamColor };
+                teams[teamName] = { points: 0, color: teamColor, history: [] };
                 updateTeamSelect();
                 saveData();
                 updateLeaderboard();
@@ -128,6 +132,13 @@
                 return;
             }
 
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            if (!startDate || !endDate) {
+                alert('Please select a valid date range.');
+                return;
+            }
+
             const pennies = parseInt(document.getElementById('pennies').value) || 0;
             const nickels = parseInt(document.getElementById('nickels').value) || 0;
             const dimes = parseInt(document.getElementById('dimes').value) || 0;
@@ -136,6 +147,9 @@
 
             const points = pennies - (nickels * 5 + dimes * 10 + quarters * 25 + dollars * 100);
             teams[teamName].points += points;
+
+            // Store the entry in history
+            teams[teamName].history.push({ startDate, endDate, points });
 
             saveData();
             updateLeaderboard();
