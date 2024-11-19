@@ -23,8 +23,22 @@
             padding: 10px 20px;
             margin-top: 10px;
         }
-        .team-entry {
+        .team-entry, .next-steps {
             margin-bottom: 20px;
+        }
+        .link-button {
+            display: block;
+            text-align: center;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .link-button:hover {
+            background-color: #2980b9;
         }
     </style>
 </head>
@@ -58,6 +72,12 @@
         <tbody id="teamTable">
         </tbody>
     </table>
+
+    <div class="next-steps">
+        <h2>Next Steps</h2>
+        <p>Once you have added your teams, you can proceed to enter daily updates for each team's points.</p>
+        <a href="dailyEntry.html" class="link-button">Go to Daily Entry Page</a>
+    </div>
 
     <script>
         let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || {
