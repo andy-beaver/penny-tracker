@@ -6,27 +6,27 @@
     <title>Penny War Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Optional custom styles can go here */
+        /* Custom styling for dark mode */
         .dark-mode {
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: #1a202c;
+            color: #f7fafc;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
-    <div class="max-w-4xl mx-auto p-4">
-        <h1 class="text-3xl font-bold text-center mb-6">Penny War Tracker</h1>
-        <div class="mb-4 flex justify-center items-center">
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        <h1 class="text-4xl font-extrabold text-center text-blue-600 mb-6">Penny War Tracker</h1>
+        <div class="flex justify-center items-center mb-4">
             <label for="darkModeToggle" class="mr-2 text-lg">Dark Mode:</label>
             <input type="checkbox" id="darkModeToggle" class="h-5 w-5" onclick="toggleDarkMode()">
         </div>
         <div class="bg-white shadow rounded-lg p-6 mb-6">
             <h2 class="text-2xl font-semibold mb-4">Instructions</h2>
             <p class="mb-4">Welcome to the Penny War Tracker! This application helps you manage and track a Penny War competition, complete with setup, daily entries, and visualizations.</p>
-            <ol class="list-decimal list-inside mb-4">
-                <li><strong>Setup:</strong> Use the <a href="setup.html" class="text-blue-500 hover:underline">Setup Page</a> to configure the start and end dates, teams, colors, and initial points.</li>
-                <li><strong>Daily Entries:</strong> Use the <a href="dailyEntry.html" class="text-blue-500 hover:underline">Daily Entry Page</a> to record daily updates for each team's points.</li>
-                <li><strong>Visualization:</strong> Use the <a href="visualization.html" class="text-blue-500 hover:underline">Visualization Page</a> to see a graphical representation of the current standings.</li>
+            <ol class="list-decimal list-inside space-y-2">
+                <li><strong>Setup:</strong> Use the <a href="setup.html" class="text-blue-500 hover:underline font-semibold">Setup Page</a> to configure the start and end dates, teams, colors, and initial points.</li>
+                <li><strong>Daily Entries:</strong> Use the <a href="dailyEntry.html" class="text-blue-500 hover:underline font-semibold">Daily Entry Page</a> to record daily updates for each team's points.</li>
+                <li><strong>Visualization:</strong> Use the <a href="visualization.html" class="text-blue-500 hover:underline font-semibold">Visualization Page</a> to see a graphical representation of the current standings.</li>
             </ol>
         </div>
     </div>
