@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penny War Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+        }
+        button, input[type="file"] {
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Penny War Tracker</h1>
+    <div>
+        <label for="teamName">Team Name:</label>
+        <input type="text" id="teamName" placeholder="Enter team name">
+        <label for="points">Points to Add/Subtract:</label>
+        <input type="number" id="points" placeholder="Enter points (e.g., -25)">
+        <button onclick="addPoints()">Add Points</button>
+        <button onclick="resetData()">Reset Data</button>
+        <button onclick="exportCSV()">Export CSV</button>
+        <input type="file" id="importFile" accept=".csv" onchange="importCSV(event)">
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard">
+        </tbody>
+    </table>
+
+    <script>
+        // Load existing data from localStorage
+        let teams = JSON.parse(localStorage.getItem('pennyWarTeams')) || {};
+
+        function addPoints() {
+            const teamName = document.getElementById('teamName').value.trim();
+            const points = parseInt(document.getElementById('points').value);
+
+            if (!teamName || isNaN(points)) {
+                alert('Please enter a valid team name and points.');
+                return;
+            }
+
+            if (!teams[teamName]) {
+                teams[teamName] = 0;
+            }
+
+            teams[teamName] += points;
+            saveData();
+            updateLeaderboard();
+
+            // Clear input fields
+            document.getElementById('teamName').value = '';
+            document.getElementById('points').value = '';
+        }
+
+        function updateLeaderboard() {
+            const leaderboard = document.getElementById('leaderboard');
+            leaderboard.innerHTML = '';
+
+            const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+
+            for (const [team, points] of sortedTeams) {
+                const row = document.createElement('tr');
+                const teamCell = document.createElement('td');
+                const pointsCell = document.createElement('td');
+
+                teamCell.textContent = team;
+                pointsCell.textContent = points;
+
+                row.appendChild(teamCell);
+                row.appendChild(pointsCell);
+                leaderboard.appendChild(row);
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('pennyWarTeams', JSON.stringify(teams));
+        }
+
+        function resetData() {
+            if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                teams = {};
+                saveData();
+                updateLeaderboard();
+            }
+        }
+
+        function exportCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Team,Points\n";
+
+            for (const [team, points] of Object.entries(teams)) {
+                csvContent += `${team},${points}\n`;
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "penny_war_tracker.csv");
+            document.body.appendChild(link);
+
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const contents = e.target.result;
+                const rows = contents.split("\n").map(row => row.split(","));
+
+                // Clear existing data
+                teams = {};
+
+                // Process rows (skip header)
+                for (let i = 1; i < rows.length; i++) {
+                    const [team, points] = rows[i];
+                    if (team && !isNaN(parseInt(points))) {
+                        teams[team.trim()] = parseInt(points);
+                    }
+                }
+
+                saveData();
+                updateLeaderboard();
+                document.getElementById('importFile').value = ''; // Clear file input
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Initial load
+        updateLeaderboard();
+    </script>
+</body>
+</html>
