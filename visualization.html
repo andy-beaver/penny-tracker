@@ -46,13 +46,7 @@
 
     <script>
         // Sample data for testing; replace this with your actual data retrieval
-        let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || {
-            teams: {
-                'Team A': { points: 50, color: '#3498db', totalMoneyRaised: 200 },
-                'Team B': { points: 30, color: '#e74c3c', totalMoneyRaised: 150 },
-                'Team C': { points: 70, color: '#2ecc71', totalMoneyRaised: 250 }
-            }
-        };
+        let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || { teams: {} };
 
         function calculateTotalRaised() {
             let totalRaised = 0;
