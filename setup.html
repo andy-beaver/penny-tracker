@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penny War Setup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        input[type="text"], input[type="number"], input[type="color"], input[type="date"] {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+        .team-entry {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Penny War Setup</h1>
+    <div>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+        <button onclick="saveDates()">Save Dates</button>
+    </div>
+    <div class="team-entry">
+        <h2>Add Team</h2>
+        <label for="teamName">Team Name:</label>
+        <input type="text" id="teamName" placeholder="Enter team name">
+        <label for="teamColor">Team Color:</label>
+        <input type="color" id="teamColor" value="#3498db">
+        <label for="initialAmount">Initial Amount (Points):</label>
+        <input type="number" id="initialAmount" placeholder="Enter initial points" value="0">
+        <button onclick="addTeam()">Add Team</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Color</th>
+                <th>Initial Points</th>
+            </tr>
+        </thead>
+        <tbody id="teamTable">
+        </tbody>
+    </table>
+
+    <script>
+        let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || {
+            startDate: '',
+            endDate: '',
+            teams: {}
+        };
+
+        function saveDates() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (!startDate || !endDate) {
+                alert('Please select valid dates.');
+                return;
+            }
+
+            pennyWarData.startDate = startDate;
+            pennyWarData.endDate = endDate;
+            saveData();
+            alert('Dates saved successfully!');
+        }
+
+        function addTeam() {
+            const teamName = document.getElementById('teamName').value.trim();
+            const teamColor = document.getElementById('teamColor').value;
+            const initialAmount = parseInt(document.getElementById('initialAmount').value) || 0;
+
+            if (!teamName) {
+                alert('Please enter a valid team name.');
+                return;
+            }
+
+            if (!pennyWarData.teams[teamName]) {
+                pennyWarData.teams[teamName] = { points: initialAmount, color: teamColor };
+                updateTeamTable();
+                saveData();
+            } else {
+                alert('Team already exists!');
+            }
+
+            document.getElementById('teamName').value = '';
+            document.getElementById('initialAmount').value = '0';
+        }
+
+        function updateTeamTable() {
+            const teamTable = document.getElementById('teamTable');
+            teamTable.innerHTML = '';
+
+            for (const [team, data] of Object.entries(pennyWarData.teams)) {
+                const row = document.createElement('tr');
+                const teamCell = document.createElement('td');
+                const colorCell = document.createElement('td');
+                const pointsCell = document.createElement('td');
+
+                teamCell.textContent = team;
+                colorCell.style.backgroundColor = data.color;
+                pointsCell.textContent = data.points;
+
+                row.appendChild(teamCell);
+                row.appendChild(colorCell);
+                row.appendChild(pointsCell);
+                teamTable.appendChild(row);
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('pennyWarData', JSON.stringify(pennyWarData));
+        }
+
+        // Initial load
+        updateTeamTable();
+    </script>
+</body>
+</html>
