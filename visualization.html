@@ -5,67 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penny War Visualization</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<style>
-    .bar-container {
-        height: 300px; /* Fixed height for scaling */
-    }
-    .bar {
-        width: 40px; /* Fixed width for visibility */
-        margin: 2px;
-        background-color: #3498db; /* Default color */
-        position: relative;
-        transition: height 0.3s ease-in-out;
-        display: flex;
-        justify-content: center;
-        align-items: flex-end;
-        border-top-left-radius: 0.5rem;
-        border-top-right-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow for better visibility */
-    }
-    .bar span {
-        position: absolute;
-        bottom: 0;
-        font-size: 0.9rem;
-        color: white;
-    }
-</style>
-
-<script>
-    function renderChart() {
-        const chartContainer = document.getElementById('chartContainer');
-        chartContainer.innerHTML = ''; // Clear existing content
-
-        const sortedTeams = Object.entries(pennyWarData.teams).sort((a, b) => b[1].points - a[1].points);
-        if (sortedTeams.length === 0) {
-            chartContainer.innerHTML = '<p class="text-center text-lg text-gray-600">No data to display</p>';
-            return;
+    <style>
+        .bar-container {
+            height: 300px; /* Fixed height for scaling */
         }
-
-        // Find the max value for scaling
-        const maxPoints = Math.max(...sortedTeams.map(([_, data]) => data.points)) || 1; // Prevent division by zero
-
-        sortedTeams.forEach(([team, data]) => {
-            const barWrapper = document.createElement('div');
-            barWrapper.className = 'flex flex-col items-center w-16';
-
-            const bar = document.createElement('div');
-            bar.className = 'bar';
-            bar.style.height = `${(data.points / maxPoints) * 100}%`; // Scale height relative to max points
-            bar.style.backgroundColor = data.color || '#3498db'; // Fallback color if data.color is missing
-            barWrapper.appendChild(bar);
-
-            const label = document.createElement('span');
-            label.textContent = data.points;
-            bar.appendChild(label);
-
-            const teamName = document.createElement('p');
-            teamName.className = 'mt-2 text-sm font-medium text-center';
-            teamName.textContent = team;
-            barWrapper.appendChild(teamName);
-
-            chartContainer.appendChild(barWrapper);
-        });
-    }
+        .bar {
+            width: 40px; /* Fixed width for visibility */
+            margin: 2px;
+            background-color: #3498db; /* Default color */
+            position: relative;
+            transition: height 0.3s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow for better visibility */
+        }
+        .bar span {
+            position: absolute;
+            bottom: 0;
+            font-size: 0.9rem;
+            color: white;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen">
     <div class="max-w-4xl mx-auto py-8 px-4">
