@@ -11,7 +11,7 @@
             max-width: 600px;
             margin: auto;
         }
-        h1 {
+        h1, h2 {
             text-align: center;
         }
         table {
@@ -24,28 +24,46 @@
             text-align: left;
             border: 1px solid #ccc;
         }
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], input[type="color"] {
             width: 100%;
             padding: 5px;
             margin: 5px 0;
         }
-        button, input[type="file"] {
+        button {
             padding: 10px 20px;
             margin-top: 10px;
+        }
+        .team-entry, .coin-entry {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Penny War Tracker</h1>
-    <div>
+    <div class="team-entry">
+        <h2>Add Team</h2>
         <label for="teamName">Team Name:</label>
         <input type="text" id="teamName" placeholder="Enter team name">
-        <label for="points">Points to Add/Subtract:</label>
-        <input type="number" id="points" placeholder="Enter points (e.g., -25)">
+        <label for="teamColor">Team Color:</label>
+        <input type="color" id="teamColor" value="#3498db">
+        <button onclick="addTeam()">Add Team</button>
+    </div>
+    <div class="coin-entry">
+        <h2>Enter Coins/Bills</h2>
+        <label for="selectTeam">Select Team:</label>
+        <select id="selectTeam"></select>
+        <label for="pennies">Pennies:</label>
+        <input type="number" id="pennies" placeholder="Number of pennies" value="0">
+        <label for="nickels">Nickels:</label>
+        <input type="number" id="nickels" placeholder="Number of nickels" value="0">
+        <label for="dimes">Dimes:</label>
+        <input type="number" id="dimes" placeholder="Number of dimes" value="0">
+        <label for="quarters">Quarters:</label>
+        <input type="number" id="quarters" placeholder="Number of quarters" value="0">
+        <label for="dollars">Dollar Bills:</label>
+        <input type="number" id="dollars" placeholder="Number of dollar bills" value="0">
         <button onclick="addPoints()">Add Points</button>
         <button onclick="resetData()">Reset Data</button>
-        <button onclick="exportCSV()">Export CSV</button>
-        <input type="file" id="importFile" accept=".csv" onchange="importCSV(event)">
     </div>
     <table>
         <thead>
@@ -62,45 +80,77 @@
         // Load existing data from localStorage
         let teams = JSON.parse(localStorage.getItem('pennyWarTeams')) || {};
 
-        function addPoints() {
+        function addTeam() {
             const teamName = document.getElementById('teamName').value.trim();
-            const points = parseInt(document.getElementById('points').value);
+            const teamColor = document.getElementById('teamColor').value;
 
-            if (!teamName || isNaN(points)) {
-                alert('Please enter a valid team name and points.');
+            if (!teamName) {
+                alert('Please enter a valid team name.');
                 return;
             }
 
             if (!teams[teamName]) {
-                teams[teamName] = 0;
+                teams[teamName] = { points: 0, color: teamColor };
+                updateTeamSelect();
+                saveData();
+                updateLeaderboard();
+            } else {
+                alert('Team already exists!');
             }
 
-            teams[teamName] += points;
+            document.getElementById('teamName').value = '';
+        }
+
+        function addPoints() {
+            const teamName = document.getElementById('selectTeam').value;
+            if (!teamName || !teams[teamName]) {
+                alert('Please select a valid team.');
+                return;
+            }
+
+            const pennies = parseInt(document.getElementById('pennies').value) || 0;
+            const nickels = parseInt(document.getElementById('nickels').value) || 0;
+            const dimes = parseInt(document.getElementById('dimes').value) || 0;
+            const quarters = parseInt(document.getElementById('quarters').value) || 0;
+            const dollars = parseInt(document.getElementById('dollars').value) || 0;
+
+            const points = pennies - (nickels * 5 + dimes * 10 + quarters * 25 + dollars * 100);
+            teams[teamName].points += points;
+
             saveData();
             updateLeaderboard();
-
-            // Clear input fields
-            document.getElementById('teamName').value = '';
-            document.getElementById('points').value = '';
         }
 
         function updateLeaderboard() {
             const leaderboard = document.getElementById('leaderboard');
             leaderboard.innerHTML = '';
 
-            const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+            const sortedTeams = Object.entries(teams).sort((a, b) => b[1].points - a[1].points);
 
-            for (const [team, points] of sortedTeams) {
+            for (const [team, data] of sortedTeams) {
                 const row = document.createElement('tr');
                 const teamCell = document.createElement('td');
                 const pointsCell = document.createElement('td');
 
                 teamCell.textContent = team;
-                pointsCell.textContent = points;
+                teamCell.style.color = data.color;
+                pointsCell.textContent = data.points;
 
                 row.appendChild(teamCell);
                 row.appendChild(pointsCell);
                 leaderboard.appendChild(row);
+            }
+        }
+
+        function updateTeamSelect() {
+            const selectTeam = document.getElementById('selectTeam');
+            selectTeam.innerHTML = '';
+
+            for (const team in teams) {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                selectTeam.appendChild(option);
             }
         }
 
@@ -113,57 +163,13 @@
                 teams = {};
                 saveData();
                 updateLeaderboard();
+                updateTeamSelect();
             }
-        }
-
-        function exportCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Team,Points\n";
-
-            for (const [team, points] of Object.entries(teams)) {
-                csvContent += `${team},${points}\n`;
-            }
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "penny_war_tracker.csv");
-            document.body.appendChild(link);
-
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function importCSV(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const contents = e.target.result;
-                const rows = contents.split("\n").map(row => row.split(","));
-
-                // Clear existing data
-                teams = {};
-
-                // Process rows (skip header)
-                for (let i = 1; i < rows.length; i++) {
-                    const [team, points] = rows[i];
-                    if (team && !isNaN(parseInt(points))) {
-                        teams[team.trim()] = parseInt(points);
-                    }
-                }
-
-                saveData();
-                updateLeaderboard();
-                document.getElementById('importFile').value = ''; // Clear file input
-            };
-
-            reader.readAsText(file);
         }
 
         // Initial load
         updateLeaderboard();
+        updateTeamSelect();
     </script>
 </body>
 </html>
