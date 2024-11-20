@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Penny War Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+        }
+        h1 {
+            color: #e74c3c;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+        .link-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .link-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reset Penny War Data</h1>
+    <p>
+        Warning: Clicking the button below will permanently delete all data in this app, 
+        including team information, dates, and daily entries. This action cannot be undone.
+    </p>
+    <button onclick="resetData()">Erase All Data</button>
+    <br>
+    <a href="setup.html" class="link-button">Back to Setup</a>
+
+    <script>
+        function resetData() {
+            if (confirm("Are you sure you want to erase all data? This action cannot be undone.")) {
+                localStorage.clear();
+                alert("All data has been erased. The app is now reset.");
+                window.location.href = "setup.html"; // Redirect to setup page after reset
+            }
+        }
+    </script>
+</body>
+</html>
