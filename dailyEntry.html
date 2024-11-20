@@ -32,6 +32,22 @@
         .link-button:hover, button:hover {
             background-color: #2980b9;
         }
+        .team-section {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        .edit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .edit-row label {
+            width: 50%;
+        }
     </style>
 </head>
 <body>
@@ -69,6 +85,31 @@
             renderDailyEntryForm();
         }
 
+        function editEntry(teamName) {
+            // Retrieve current data for editing
+            const pennies = parseInt(document.getElementById(`${teamName}-pennies`).value) || 0;
+            const nickels = parseInt(document.getElementById(`${teamName}-nickels`).value) || 0;
+            const dimes = parseInt(document.getElementById(`${teamName}-dimes`).value) || 0;
+            const quarters = parseInt(document.getElementById(`${teamName}-quarters`).value) || 0;
+            const dollars = parseInt(document.getElementById(`${teamName}-dollars`).value) || 0;
+            const fives = parseInt(document.getElementById(`${teamName}-fives`).value) || 0;
+            const tens = parseInt(document.getElementById(`${teamName}-tens`).value) || 0;
+            const twenties = parseInt(document.getElementById(`${teamName}-twenties`).value) || 0;
+            const fifties = parseInt(document.getElementById(`${teamName}-fifties`).value) || 0;
+            const hundreds = parseInt(document.getElementById(`${teamName}-hundreds`).value) || 0;
+
+            // Update fields directly in the form
+            pennyWarData.teams[teamName] = {
+                ...pennyWarData.teams[teamName],
+                points: pennies - (nickels * 5 + dimes * 10 + quarters * 25 + dollars * 100 + fives * 500 + tens * 1000 + twenties * 2000 + fifties * 5000 + hundreds * 10000),
+                totalMoneyRaised: (pennies * 0.01) + (nickels * 0.05) + (dimes * 0.10) + (quarters * 0.25) + (dollars * 1) + (fives * 5) + (tens * 10) + (twenties * 20) + (fifties * 50) + (hundreds * 100)
+            };
+
+            saveData();
+            alert(`Updated entry for ${teamName}.`);
+            renderDailyEntryForm();
+        }
+
         function renderDailyEntryForm() {
             const container = document.getElementById('dailyEntryContainer');
             container.innerHTML = '';
@@ -78,6 +119,7 @@
                 const totalMoneyRaised = teamData.totalMoneyRaised ? teamData.totalMoneyRaised.toFixed(2) : '0.00';
 
                 const teamDiv = document.createElement('div');
+                teamDiv.className = 'team-section';
                 teamDiv.innerHTML = `
                     <h2 style="color: ${teamData.color}">${teamName}</h2>
                     <p>Total Money Raised: $${totalMoneyRaised}</p>
@@ -101,7 +143,8 @@
                     <input type="number" id="${teamName}-fifties" placeholder="Number of $50 bills" value="0">
                     <label for="${teamName}-hundreds">Hundred Dollar Bills ($100):</label>
                     <input type="number" id="${teamName}-hundreds" placeholder="Number of $100 bills" value="0">
-                    <button onclick="updatePoints('${teamName}')">Update Points</button>
+                    <button onclick="updatePoints('${teamName}')">Add Points</button>
+                    <button onclick="editEntry('${teamName}')">Edit Entry</button>
                 `;
                 container.appendChild(teamDiv);
             }
