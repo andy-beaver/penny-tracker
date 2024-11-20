@@ -39,6 +39,10 @@
             margin-bottom: 15px;
             background-color: #f9f9f9;
         }
+        .message {
+            color: red;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -58,75 +62,83 @@
         };
 
         function renderDailyEntryForm() {
-    const container = document.getElementById('dailyEntryContainer');
-    const entryDate = document.getElementById('entryDate').value;
+            const container = document.getElementById('dailyEntryContainer');
+            const entryDate = document.getElementById('entryDate').value;
 
-    if (!entryDate) {
-        container.innerHTML = '<p>Please select a valid date.</p>';
-        return;
-    }
+            // Clear container
+            container.innerHTML = '';
 
-    // Ensure dailyEntries exists for the selected date
-    if (!pennyWarData.dailyEntries[entryDate]) {
-        pennyWarData.dailyEntries[entryDate] = {};
-    }
+            // Check if teams exist
+            if (!Object.keys(pennyWarData.teams).length) {
+                container.innerHTML = '<p class="message">No teams found. Please add teams in the setup page first.</p>';
+                return;
+            }
 
-    // Initialize teams in dailyEntries for the selected date
-    for (const teamName in pennyWarData.teams) {
-        if (!pennyWarData.dailyEntries[entryDate][teamName]) {
-            pennyWarData.dailyEntries[entryDate][teamName] = {
-                pennies: 0,
-                nickels: 0,
-                dimes: 0,
-                quarters: 0,
-                dollars: 0,
-                fives: 0,
-                tens: 0,
-                twenties: 0,
-                fifties: 0,
-                hundreds: 0,
-                points: 0,
-                totalMoneyRaised: 0
-            };
+            if (!entryDate) {
+                container.innerHTML = '<p class="message">Please select a valid date.</p>';
+                return;
+            }
+
+            // Ensure dailyEntries exists for the selected date
+            if (!pennyWarData.dailyEntries[entryDate]) {
+                pennyWarData.dailyEntries[entryDate] = {};
+            }
+
+            // Initialize teams in dailyEntries for the selected date
+            for (const teamName in pennyWarData.teams) {
+                if (!pennyWarData.dailyEntries[entryDate][teamName]) {
+                    pennyWarData.dailyEntries[entryDate][teamName] = {
+                        pennies: 0,
+                        nickels: 0,
+                        dimes: 0,
+                        quarters: 0,
+                        dollars: 0,
+                        fives: 0,
+                        tens: 0,
+                        twenties: 0,
+                        fifties: 0,
+                        hundreds: 0,
+                        points: 0,
+                        totalMoneyRaised: 0
+                    };
+                }
+            }
+
+            // Render the daily entry form
+            for (const teamName in pennyWarData.teams) {
+                const teamData = pennyWarData.teams[teamName];
+                const dailyData = pennyWarData.dailyEntries[entryDate][teamName];
+
+                const teamDiv = document.createElement('div');
+                teamDiv.className = 'team-section';
+                teamDiv.innerHTML = `
+                    <h2 style="color: ${teamData.color}">${teamName}</h2>
+                    <label for="${teamName}-pennies">Pennies:</label>
+                    <input type="number" id="${teamName}-pennies" value="${dailyData.pennies}">
+                    <label for="${teamName}-nickels">Nickels:</label>
+                    <input type="number" id="${teamName}-nickels" value="${dailyData.nickels}">
+                    <label for="${teamName}-dimes">Dimes:</label>
+                    <input type="number" id="${teamName}-dimes" value="${dailyData.dimes}">
+                    <label for="${teamName}-quarters">Quarters:</label>
+                    <input type="number" id="${teamName}-quarters" value="${dailyData.quarters}">
+                    <label for="${teamName}-dollars">Dollar Bills ($1):</label>
+                    <input type="number" id="${teamName}-dollars" value="${dailyData.dollars}">
+                    <label for="${teamName}-fives">Five Dollar Bills ($5):</label>
+                    <input type="number" id="${teamName}-fives" value="${dailyData.fives}">
+                    <label for="${teamName}-tens">Ten Dollar Bills ($10):</label>
+                    <input type="number" id="${teamName}-tens" value="${dailyData.tens}">
+                    <label for="${teamName}-twenties">Twenty Dollar Bills ($20):</label>
+                    <input type="number" id="${teamName}-twenties" value="${dailyData.twenties}">
+                    <label for="${teamName}-fifties">Fifty Dollar Bills ($50):</label>
+                    <input type="number" id="${teamName}-fifties" value="${dailyData.fifties}">
+                    <label for="${teamName}-hundreds">Hundred Dollar Bills ($100):</label>
+                    <input type="number" id="${teamName}-hundreds" value="${dailyData.hundreds}">
+                    <p>Total Points: ${dailyData.points}</p>
+                    <p>Total Money Raised: $${dailyData.totalMoneyRaised.toFixed(2)}</p>
+                `;
+                container.appendChild(teamDiv);
+            }
         }
-    }
-
-    // Render the daily entry form
-    container.innerHTML = '';
-    for (const teamName in pennyWarData.teams) {
-        const teamData = pennyWarData.teams[teamName];
-        const dailyData = pennyWarData.dailyEntries[entryDate][teamName];
-
-        const teamDiv = document.createElement('div');
-        teamDiv.className = 'team-section';
-        teamDiv.innerHTML = `
-            <h2 style="color: ${teamData.color}">${teamName}</h2>
-            <label for="${teamName}-pennies">Pennies:</label>
-            <input type="number" id="${teamName}-pennies" value="${dailyData.pennies}">
-            <label for="${teamName}-nickels">Nickels:</label>
-            <input type="number" id="${teamName}-nickels" value="${dailyData.nickels}">
-            <label for="${teamName}-dimes">Dimes:</label>
-            <input type="number" id="${teamName}-dimes" value="${dailyData.dimes}">
-            <label for="${teamName}-quarters">Quarters:</label>
-            <input type="number" id="${teamName}-quarters" value="${dailyData.quarters}">
-            <label for="${teamName}-dollars">Dollar Bills ($1):</label>
-            <input type="number" id="${teamName}-dollars" value="${dailyData.dollars}">
-            <label for="${teamName}-fives">Five Dollar Bills ($5):</label>
-            <input type="number" id="${teamName}-fives" value="${dailyData.fives}">
-            <label for="${teamName}-tens">Ten Dollar Bills ($10):</label>
-            <input type="number" id="${teamName}-tens" value="${dailyData.tens}">
-            <label for="${teamName}-twenties">Twenty Dollar Bills ($20):</label>
-            <input type="number" id="${teamName}-twenties" value="${dailyData.twenties}">
-            <label for="${teamName}-fifties">Fifty Dollar Bills ($50):</label>
-            <input type="number" id="${teamName}-fifties" value="${dailyData.fifties}">
-            <label for="${teamName}-hundreds">Hundred Dollar Bills ($100):</label>
-            <input type="number" id="${teamName}-hundreds" value="${dailyData.hundreds}">
-            <p>Total Points: ${dailyData.points}</p>
-            <p>Total Money Raised: $${dailyData.totalMoneyRaised.toFixed(2)}</p>
-        `;
-        container.appendChild(teamDiv);
-    }
-}
 
         function saveDailyEntries() {
             const entryDate = document.getElementById('entryDate').value;
