@@ -23,8 +23,28 @@
             padding: 10px 20px;
             margin-top: 10px;
         }
-        .team-entry, .next-steps {
-            margin-bottom: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .edit-button {
+            padding: 5px 10px;
+            background-color: #f1c40f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .edit-button:hover {
+            background-color: #d4ac0d;
         }
         .link-button {
             display: block;
@@ -35,7 +55,6 @@
             color: white;
             text-decoration: none;
             border-radius: 5px;
-            text-align: center;
         }
         .link-button:hover {
             background-color: #2980b9;
@@ -67,6 +86,7 @@
                 <th>Team</th>
                 <th>Color</th>
                 <th>Initial Points</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody id="teamTable">
@@ -123,6 +143,23 @@
             document.getElementById('initialAmount').value = '0';
         }
 
+        function editTeam(teamName) {
+            const newTeamName = prompt('Enter a new name for the team:', teamName) || teamName;
+            const newColor = prompt('Enter a new color (hex code):', pennyWarData.teams[teamName].color) || pennyWarData.teams[teamName].color;
+            const newPoints = parseInt(prompt('Enter new initial points:', pennyWarData.teams[teamName].points)) || pennyWarData.teams[teamName].points;
+
+            // Update team data
+            if (newTeamName !== teamName) {
+                pennyWarData.teams[newTeamName] = pennyWarData.teams[teamName];
+                delete pennyWarData.teams[teamName];
+            }
+            pennyWarData.teams[newTeamName].color = newColor;
+            pennyWarData.teams[newTeamName].points = newPoints;
+
+            updateTeamTable();
+            saveData();
+        }
+
         function updateTeamTable() {
             const teamTable = document.getElementById('teamTable');
             teamTable.innerHTML = '';
@@ -132,14 +169,24 @@
                 const teamCell = document.createElement('td');
                 const colorCell = document.createElement('td');
                 const pointsCell = document.createElement('td');
+                const actionsCell = document.createElement('td');
 
                 teamCell.textContent = team;
                 colorCell.style.backgroundColor = data.color;
                 pointsCell.textContent = data.points;
 
+                // Add Edit Button
+                const editButton = document.createElement('button');
+                editButton.className = 'edit-button';
+                editButton.textContent = 'Edit';
+                editButton.onclick = () => editTeam(team);
+
+                actionsCell.appendChild(editButton);
+
                 row.appendChild(teamCell);
                 row.appendChild(colorCell);
                 row.appendChild(pointsCell);
+                row.appendChild(actionsCell);
                 teamTable.appendChild(row);
             }
         }
