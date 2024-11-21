@@ -48,7 +48,7 @@
 <body>
     <h1>Penny War Daily Entry</h1>
     <label for="entryDate">Select Date:</label>
-    <input type="date" id="entryDate" value="${new Date().toISOString().split('T')[0]}">
+    <input type="date" id="entryDate">
     <div id="dailyEntryContainer"></div>
     <button onclick="saveDailyEntries()">Save Daily Entries</button>
     <div style="text-align: center; margin-top: 20px;">
@@ -56,12 +56,16 @@
     </div>
 
     <script>
+        // Load data from localStorage or initialize defaults
         let pennyWarData = JSON.parse(localStorage.getItem('pennyWarData')) || {
             teams: {},
             dailyEntries: {}
         };
 
         console.log('Loaded pennyWarData:', pennyWarData);
+
+        // Initialize the date field to today's date
+        document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 
         function renderDailyEntryForm() {
             const container = document.getElementById('dailyEntryContainer');
@@ -186,8 +190,10 @@
             alert('Daily entries saved successfully!');
         }
 
-        // Initial render
+        // Event listener for date change
         document.getElementById('entryDate').addEventListener('change', renderDailyEntryForm);
+
+        // Initial render
         renderDailyEntryForm();
     </script>
 </body>
