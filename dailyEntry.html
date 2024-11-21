@@ -62,6 +62,12 @@
             dailyEntries: {}
         };
 
+        // Ensure dailyEntries object exists
+        if (!pennyWarData.dailyEntries) {
+            pennyWarData.dailyEntries = {};
+        }
+
+        // Debug log to verify data
         console.log('Loaded pennyWarData:', pennyWarData);
 
         // Initialize the date field to today's date
@@ -76,7 +82,9 @@
 
             // Check if teams exist
             if (!pennyWarData.teams || Object.keys(pennyWarData.teams).length === 0) {
-                container.innerHTML = '<p class="message">No teams found. Please add teams in the setup page first.</p>';
+                container.innerHTML = `
+                    <p class="message">No teams found. 
+                    Please <a href="setup.html">add teams on the setup page</a>.</p>`;
                 return;
             }
 
@@ -85,14 +93,10 @@
                 return;
             }
 
-            // Ensure dailyEntries exists for the selected date
+            // Initialize daily entries for the selected date
             if (!pennyWarData.dailyEntries[entryDate]) {
                 pennyWarData.dailyEntries[entryDate] = {};
-            }
-
-            // Initialize teams in dailyEntries for the selected date
-            for (const teamName in pennyWarData.teams) {
-                if (!pennyWarData.dailyEntries[entryDate][teamName]) {
+                for (const teamName in pennyWarData.teams) {
                     pennyWarData.dailyEntries[entryDate][teamName] = {
                         pennies: 0,
                         nickels: 0,
@@ -110,7 +114,10 @@
                 }
             }
 
-            // Render the daily entry form
+            // Debug log for dailyEntries on the selected date
+            console.log('Daily Entries for Date:', pennyWarData.dailyEntries[entryDate]);
+
+            // Render the daily entry form for each team
             for (const teamName in pennyWarData.teams) {
                 const teamData = pennyWarData.teams[teamName];
                 const dailyData = pennyWarData.dailyEntries[entryDate][teamName];
